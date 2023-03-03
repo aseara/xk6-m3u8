@@ -1,4 +1,4 @@
-package redis
+package m3u8
 
 import "fmt"
 

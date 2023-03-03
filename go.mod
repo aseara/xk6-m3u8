@@ -1,4 +1,4 @@
-module github.com/aseara/xk6-redis
+module github.com/aseara/xk6-m3u8
 
 go 1.19
 

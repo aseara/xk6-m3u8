@@ -1,4 +1,4 @@
-package redis
+package m3u8
 
 import (
 	"context"
@@ -7,12 +7,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"go.k6.io/k6/js/modules"
 )
-
-func init() {
-	modules.Register("k6/x/redis", new(RedisExt))
-}
 
 type RedisExt struct{}
 
