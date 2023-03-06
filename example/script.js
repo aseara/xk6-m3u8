@@ -1,20 +1,14 @@
-import redis from 'k6/x/redis';
+import m3u8 from 'k6/x/m3u8';
 
-const client = redis.newClient("192.168.2.39:26379", "Hg#9tk^s", 6);
+export const options = {
+    vus: 3,
+    duration: '60s',
+};
 
 export function setup() {
-    redis.set(client,"snake","camel",0)
-    redis.set(client,"foo",100,10)
+    m3u8.start("http://127.0.0.1:30769/01.m3u8", ".\\tmp\\")
 }
 
 export default function () {
-    console.log(redis.get(client,"snake"))
-    console.log(redis.get(client,"foo"))
-    if (redis.do(client,"PING","bzzz") == "bzzz"){
-        console.log("PONG!")
-    }
-}
-
-export function teardown () {
-    redis.del(client,"foo")
+    m3u8.check()
 }

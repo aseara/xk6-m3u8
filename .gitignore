@@ -26,6 +26,7 @@ gin-bin
 ### Go Patch ###
 /vendor/
 /Godeps/
+/tmp/
 
 ### Linux ###
 *~
