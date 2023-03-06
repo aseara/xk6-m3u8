@@ -3,8 +3,9 @@ module github.com/aseara/xk6-m3u8
 go 1.19
 
 require (
-	github.com/canhlinh/hlsdl v0.0.0-20230222081421-8304b8b61fd3
+	github.com/grafov/m3u8 v0.11.1
 	go.k6.io/k6 v0.43.0
+	gopkg.in/cheggaaa/pb.v1 v1.0.28
 )
 
 require (
@@ -12,7 +13,6 @@ require (
 	github.com/dop251/goja v0.0.0-20230128084908-78b980256d04 // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.4-0.20211119122758-180fcef48034+incompatible // indirect
-	github.com/grafov/m3u8 v0.11.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
@@ -28,6 +28,5 @@ require (
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
 	golang.org/x/time v0.0.0-20220922220347-f3bd1da661af // indirect
-	gopkg.in/cheggaaa/pb.v1 v1.0.28 // indirect
 	gopkg.in/guregu/null.v3 v3.3.0 // indirect
 )
