@@ -14,7 +14,6 @@ type Recorder struct {
 	client *http.Client
 	dir    string
 	url    string
-	runing bool
 	stop   chan struct{}
 }
 
@@ -23,7 +22,7 @@ func NewRecorder(url string, dir string) *Recorder {
 		url:    url,
 		dir:    dir,
 		client: &http.Client{},
-		stop:   make(chan struct{}),
+		stop:   make(chan struct{}, 1),
 	}
 }
 
@@ -71,12 +70,8 @@ LOOP:
 	return filePath, nil
 }
 
-func (r *Recorder) Stop() error {
-	if r.runing {
-		close(r.stop)
-		r.runing = false
-	}
-	return nil
+func (r *Recorder) Stop() {
+	close(r.stop)
 }
 
 type DownloadSegmentReport struct {

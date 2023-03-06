@@ -19,7 +19,7 @@ Then:
 
 2. Build the binary:
   ```shell
-  xk6 build --with github.com/grafana/xk6-m3u8=.
+  xk6 build --with github.com/aseara/xk6-m3u8=.
   ```
 
 ## Example test scripts

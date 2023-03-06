@@ -38,6 +38,6 @@ func (p *StreamPlayer) Check() {
 }
 
 func (p *StreamPlayer) Stop() {
-	_ = p.recorder.Stop()
+	p.recorder.Stop()
 	_ = os.RemoveAll(p.subDir)
 }
