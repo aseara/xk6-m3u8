@@ -5,7 +5,7 @@ ADD . .
 RUN apk --no-cache add build-base git
 RUN go install go.k6.io/xk6/cmd/xk6@latest
 RUN CGO_ENABLED=1 xk6 build \
-    --with github.com/grafana/xk6-sql=. \
+    --with github.com/aseara/xk6-m3u8=. \
     --output /tmp/k6
 
 # Create image for running your customized k6

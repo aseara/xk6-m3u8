@@ -16,10 +16,11 @@ type StreamPlayer struct {
 	subDir   string
 }
 
-func (p *StreamPlayer) Start(url string, dir string) error {
+func (p *StreamPlayer) Start(url string) error {
 	rt := p.vu.Runtime()
-	p.subDir = filepath.Join(dir, rt.Get("__VU").String())
-	_ = os.Mkdir(p.subDir, os.ModePerm)
+	p.subDir = filepath.Join("tmp", rt.Get("__VU").String())
+	_ = os.MkdirAll(p.subDir, os.ModePerm)
+
 	log.Println("Recorded file at ", p.subDir)
 	p.recorder = hls.NewRecorder(url, p.subDir)
 	go func() {
