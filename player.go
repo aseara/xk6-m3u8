@@ -1,10 +1,8 @@
 package m3u8
 
 import (
-	"log"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/aseara/xk6-m3u8/hls"
 	"go.k6.io/k6/js/modules"
@@ -16,30 +14,20 @@ type StreamPlayer struct {
 	subDir   string
 }
 
-func (p *StreamPlayer) Start(url string) error {
-	rt := p.vu.Runtime()
-	p.subDir = filepath.Join("tmp", rt.Get("__VU").String())
-	_ = os.MkdirAll(p.subDir, os.ModePerm)
+func NewPlayer(vu modules.VU) *StreamPlayer {
+	rt := vu.Runtime()
+	subDir := filepath.Join("tmp", rt.Get("__VU").String())
+	_ = os.MkdirAll(subDir, os.ModePerm)
+	return &StreamPlayer{
+		vu:     vu,
+		subDir: subDir,
+	}
+}
 
-	log.Println("Recorded file at ", p.subDir)
+func (p *StreamPlayer) Set(url string) {
 	p.recorder = hls.NewRecorder(url, p.subDir)
-	go func() {
-		recordedFile, err := p.recorder.Start()
-		if err != nil {
-			_ = os.RemoveAll(recordedFile)
-			log.Println("play error", err)
-		}
-	}()
-
-	return nil
 }
 
-func (p *StreamPlayer) Check() {
-	time.Sleep(5 * time.Second)
-}
-
-func (p *StreamPlayer) Stop() {
-	log.Println("Stop recording file at ", p.subDir)
-	p.recorder.Stop()
-	_ = os.RemoveAll(p.subDir)
+func (p *StreamPlayer) Record() {
+	_, _ = p.recorder.Record()
 }

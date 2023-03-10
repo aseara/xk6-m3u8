@@ -4,44 +4,43 @@ import (
 	"errors"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
-	"os/signal"
 	"path/filepath"
+	"time"
 )
 
 type Recorder struct {
-	client *http.Client
-	dir    string
-	url    string
-	stop   chan struct{}
+	client        *http.Client
+	dir           string
+	url           string
+	pulledSegment map[uint64]bool
 }
 
 func NewRecorder(url string, dir string) *Recorder {
 	return &Recorder{
-		url:    url,
-		dir:    dir,
-		client: &http.Client{},
-		stop:   make(chan struct{}, 1),
+		url:           url,
+		dir:           dir,
+		client:        &http.Client{},
+		pulledSegment: map[uint64]bool{},
 	}
 }
 
-// Start starts a record a live streaming
-func (r *Recorder) Start() (string, error) {
-	log.Println("Start record live streaming movie...")
-
-	quitSignal := make(chan os.Signal, 1)
-	signal.Notify(quitSignal, os.Interrupt)
-	puller := pullSegment(r.url, quitSignal)
+// Start starts a record a live-streaming
+func (r *Recorder) Record() (string, error) {
+	puller, d := r.pullSegment(r.url)
+	d = d + rand.Float64()*2
+	duration := time.NewTicker(time.Duration(d) * time.Second)
 
 	filePath := filepath.Join(r.dir, "video.ts")
+	log.Printf("Start record live streaming movie at %s...", filePath)
 	file, err := os.Create(filePath)
 	if err != nil {
 		return "", err
 	}
 	defer func() { _ = file.Close() }()
 
-LOOP:
 	for segment := range puller {
 		if segment.Err != nil {
 			return "", segment.Err
@@ -58,20 +57,12 @@ LOOP:
 			if _, err := file.Write(report.Data); err != nil {
 				return "", err
 			}
-		case <-quitSignal:
-			break LOOP
-		case <-r.stop:
-			break LOOP
 		}
 
 		log.Println("Recorded segment ", segment.Segment.SeqId)
 	}
-
+	<-duration.C
 	return filePath, nil
-}
-
-func (r *Recorder) Stop() {
-	close(r.stop)
 }
 
 type DownloadSegmentReport struct {
@@ -137,7 +128,7 @@ func (r *Recorder) getKey(segment *Segment) (key []byte, iv []byte, err error) {
 	}
 
 	if res.StatusCode != 200 {
-		return nil, nil, errors.New("Failed to get descryption key")
+		return nil, nil, errors.New("failed to get decryption key")
 	}
 
 	key, err = io.ReadAll(res.Body)

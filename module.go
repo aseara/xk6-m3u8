@@ -25,7 +25,7 @@ func New() *RootModule {
 func (r RootModule) NewModuleInstance(vu modules.VU) modules.Instance {
 	return &ModuleInstance{
 		vu:     vu,
-		player: &StreamPlayer{vu: vu},
+		player: NewPlayer(vu),
 	}
 }
 
