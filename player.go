@@ -39,6 +39,7 @@ func (p *StreamPlayer) Check() {
 }
 
 func (p *StreamPlayer) Stop() {
+	log.Println("Stop recording file at ", p.subDir)
 	p.recorder.Stop()
 	_ = os.RemoveAll(p.subDir)
 }
