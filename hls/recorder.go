@@ -6,7 +6,6 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"os"
 	"path/filepath"
 	"time"
 )
@@ -27,23 +26,18 @@ func NewRecorder(url string, dir string) *Recorder {
 	}
 }
 
-// Start starts a record a live-streaming
-func (r *Recorder) Record() (string, error) {
+// Record Start starts a record a live-streaming
+func (r *Recorder) Record() error {
 	puller, d := r.pullSegment(r.url)
 	d = d + rand.Float64()*2
 	duration := time.NewTicker(time.Duration(d) * time.Second)
 
 	filePath := filepath.Join(r.dir, "video.ts")
-	log.Printf("Start record live streaming movie at %s...", filePath)
-	file, err := os.Create(filePath)
-	if err != nil {
-		return "", err
-	}
-	defer func() { _ = file.Close() }()
+	log.Printf("Start record live streaming movie with %s...", filePath)
 
 	for segment := range puller {
 		if segment.Err != nil {
-			return "", segment.Err
+			return segment.Err
 		}
 
 		dc := r.downloadSegmentC(segment.Segment)
@@ -51,18 +45,14 @@ func (r *Recorder) Record() (string, error) {
 		select {
 		case report := <-dc:
 			if report.Err != nil {
-				return "", report.Err
-			}
-
-			if _, err := file.Write(report.Data); err != nil {
-				return "", err
+				return report.Err
 			}
 		}
 
 		log.Println("Recorded segment ", segment.Segment.SeqId)
 	}
 	<-duration.C
-	return filePath, nil
+	return nil
 }
 
 type DownloadSegmentReport struct {

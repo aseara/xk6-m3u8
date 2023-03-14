@@ -29,5 +29,5 @@ func (p *StreamPlayer) Set(url string) {
 }
 
 func (p *StreamPlayer) Record() {
-	_, _ = p.recorder.Record()
+	_ = p.recorder.Record()
 }
