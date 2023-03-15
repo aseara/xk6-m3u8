@@ -27,17 +27,15 @@ func NewRecorder(url string, dir string) *Recorder {
 }
 
 // Record Start starts a record a live-streaming
-func (r *Recorder) Record() error {
+func (r *Recorder) Record() (cnt int, err error) {
 	puller, d := r.pullSegment(r.url)
-	d = d + rand.Float64()*2
-	duration := time.NewTicker(time.Duration(d) * time.Second)
 
 	filePath := filepath.Join(r.dir, "video.ts")
 	log.Printf("Start record live streaming movie with %s...", filePath)
 
 	for segment := range puller {
 		if segment.Err != nil {
-			return segment.Err
+			return cnt, segment.Err
 		}
 
 		dc := r.downloadSegmentC(segment.Segment)
@@ -45,14 +43,19 @@ func (r *Recorder) Record() error {
 		select {
 		case report := <-dc:
 			if report.Err != nil {
-				return report.Err
+				return cnt, report.Err
 			}
+			cnt += len(report.Data)
 		}
 
 		log.Println("Recorded segment ", segment.Segment.SeqId)
 	}
-	<-duration.C
-	return nil
+	if d > 0 {
+		d = d + rand.Float64()*2
+		duration := time.NewTicker(time.Duration(d) * time.Second)
+		<-duration.C
+	}
+	return cnt, nil
 }
 
 type DownloadSegmentReport struct {

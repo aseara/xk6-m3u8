@@ -5,8 +5,7 @@ export const options = {
     duration: '30s',
 };
 
-m3u8.set("http://127.0.0.1:30769/01.m3u8")
-
+m3u8.set("http://127.0.0.1:30769/0122.m3u8");
 export default function () {
     m3u8.record()
 }
